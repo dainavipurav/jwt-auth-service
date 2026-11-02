@@ -11,6 +11,7 @@ import com.learning.springboot.authservice.exception.UserNotFoundException;
 import com.learning.springboot.authservice.repository.RolesRepository;
 import com.learning.springboot.authservice.repository.UserRepository;
 import com.learning.springboot.authservice.security.JwtService;
+import com.learning.springboot.authservice.security.RefreshTokenService;
 import com.learning.springboot.authservice.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
     @Override
     @Transactional
@@ -93,7 +95,7 @@ public class AuthServiceImpl implements AuthService {
         return LoginResponseDto.builder()
                 .status(HttpStatus.OK.value())
                 .accessToken(accessToken)
-                .refreshToken("refresh")
+                .refreshToken(refreshTokenService.createRefreshToken(userEntity))
                 .message("Login successful")
                 .userId(userEntity.getId())
                 .username(username)
