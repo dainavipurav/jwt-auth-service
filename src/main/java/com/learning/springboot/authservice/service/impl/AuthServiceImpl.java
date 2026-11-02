@@ -10,6 +10,7 @@ import com.learning.springboot.authservice.exception.UserAlreadyExistsException;
 import com.learning.springboot.authservice.exception.UserNotFoundException;
 import com.learning.springboot.authservice.repository.RolesRepository;
 import com.learning.springboot.authservice.repository.UserRepository;
+import com.learning.springboot.authservice.security.JwtService;
 import com.learning.springboot.authservice.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,7 @@ public class AuthServiceImpl implements AuthService {
     private final RolesRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     @Override
     @Transactional
@@ -86,11 +88,19 @@ public class AuthServiceImpl implements AuthService {
 
         Set<String> roles = userEntity.getRoles().stream().map(RoleEntity::getRole).collect(Collectors.toSet());
 
+        String accessToken = jwtService.generateAccessToken(userEntity);
+
         return LoginResponseDto.builder()
                 .status(HttpStatus.OK.value())
-                .accessToken("access")
+                .accessToken(accessToken)
                 .refreshToken("refresh")
                 .message("Login successful")
+                .userId(userEntity.getId())
+                .username(username)
+                .email(userEntity.getEmail())
+                .roles(roles)
+                .tokenType("Bearer")
+                .expiresIn(jwtService.getAccessTokenExpirationSeconds())
                 .build();
     }
 }
