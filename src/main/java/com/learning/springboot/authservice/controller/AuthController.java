@@ -1,5 +1,7 @@
 package com.learning.springboot.authservice.controller;
 
+import com.learning.springboot.authservice.dtos.auth.login.LoginRequestDto;
+import com.learning.springboot.authservice.dtos.auth.login.LoginResponseDto;
 import com.learning.springboot.authservice.dtos.auth.register.RegisterRequestDto;
 import com.learning.springboot.authservice.dtos.success.SuccessResponseDto;
 import com.learning.springboot.authservice.service.AuthService;
@@ -22,5 +24,10 @@ public class AuthController {
     @PostMapping("/register")
     public SuccessResponseDto register(@Valid @RequestBody RegisterRequestDto request){
         return authService.register(request);
+    }
+
+    @PostMapping("/login")
+    public LoginResponseDto login(@Valid @RequestBody LoginRequestDto request){
+        return authService.login(request);
     }
 }
