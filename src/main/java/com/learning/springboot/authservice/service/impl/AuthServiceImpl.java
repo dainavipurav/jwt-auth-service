@@ -4,10 +4,12 @@ import com.learning.springboot.authservice.dtos.auth.login.LoginRequestDto;
 import com.learning.springboot.authservice.dtos.auth.login.LoginResponseDto;
 import com.learning.springboot.authservice.dtos.auth.register.RegisterRequestDto;
 import com.learning.springboot.authservice.dtos.success.SuccessResponseDto;
+import com.learning.springboot.authservice.entity.RefreshTokenEntity;
 import com.learning.springboot.authservice.entity.RoleEntity;
 import com.learning.springboot.authservice.entity.UserEntity;
 import com.learning.springboot.authservice.exception.UserAlreadyExistsException;
 import com.learning.springboot.authservice.exception.UserNotFoundException;
+import com.learning.springboot.authservice.repository.RefreshTokenRepository;
 import com.learning.springboot.authservice.repository.RolesRepository;
 import com.learning.springboot.authservice.repository.UserRepository;
 import com.learning.springboot.authservice.security.JwtService;
@@ -36,6 +38,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     @Transactional
@@ -103,6 +106,24 @@ public class AuthServiceImpl implements AuthService {
                 .roles(roles)
                 .tokenType("Bearer")
                 .expiresIn(jwtService.getAccessTokenExpirationSeconds())
+                .build();
+    }
+
+    @Override
+    public SuccessResponseDto logout(String request) {
+
+        String tokenHash = refreshTokenService.hashToken(request);
+
+        RefreshTokenEntity refreshTokenEntity = refreshTokenRepository.findByTokenHash(tokenHash).orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        refreshTokenEntity.setRevoked(true);
+
+        refreshTokenRepository.save(refreshTokenEntity);
+
+        return SuccessResponseDto.builder()
+                .status(HttpStatus.OK.value())
+                .message("User logout successfully")
+                .timestamp(LocalDateTime.now())
                 .build();
     }
 }

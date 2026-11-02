@@ -8,10 +8,7 @@ import com.learning.springboot.authservice.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -29,5 +26,11 @@ public class AuthController {
     @PostMapping("/login")
     public LoginResponseDto login(@Valid @RequestBody LoginRequestDto request){
         return authService.login(request);
+    }
+
+
+    @PostMapping("/logout")
+    public SuccessResponseDto Logout(@RequestParam String refreshToken){
+        return authService.logout(refreshToken);
     }
 }

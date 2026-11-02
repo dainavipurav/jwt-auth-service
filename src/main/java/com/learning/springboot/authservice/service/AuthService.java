@@ -10,4 +10,6 @@ public interface AuthService {
     SuccessResponseDto register(RegisterRequestDto request);
 
     LoginResponseDto login(LoginRequestDto request);
+
+    SuccessResponseDto logout(String request);
 }
