@@ -17,6 +17,13 @@ public class AuthenticationConfig {
     private final PasswordEncoder passwordEncoder;
 
     @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration configuration) throws Exception {
+
+        return configuration.getAuthenticationManager();
+    }
+
+    @Bean
     public DaoAuthenticationProvider authenticationProvider() {
 
         DaoAuthenticationProvider provider =
@@ -25,12 +32,5 @@ public class AuthenticationConfig {
         provider.setPasswordEncoder(passwordEncoder);
 
         return provider;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration configuration) throws Exception {
-
-        return configuration.getAuthenticationManager();
     }
 }
